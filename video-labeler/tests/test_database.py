@@ -112,6 +112,28 @@ class TestDatabase(unittest.TestCase):
         comedy_videos = self.db.get_videos_for_label_name('Comedy')
         self.assertEqual(comedy_videos, ['vid2.mp4'])
 
+    def test_update_video_filepath(self):
+        """ Test updating a video's filepath. """
+        old_path = '/movies/old_name.avi'
+        new_path = '/movies/new_name.avi'
+
+        # Create the initial record
+        video_id1 = self.db.get_or_create_video(old_path)
+        self.assertEqual(video_id1, 1)
+
+        # Update the filepath
+        self.db.update_video_filepath(old_path, new_path)
+
+        # The old path should not resolve to the same ID anymore (it's gone)
+        # and a new video with the old path would get a new ID
+        video_id_old_after_update = self.db.get_or_create_video(old_path)
+        self.assertNotEqual(video_id_old_after_update, video_id1)
+        self.assertEqual(video_id_old_after_update, 2)
+
+        # The new path should now resolve to the original ID
+        video_id_new = self.db.get_or_create_video(new_path)
+        self.assertEqual(video_id_new, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

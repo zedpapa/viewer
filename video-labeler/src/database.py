@@ -130,3 +130,10 @@ class Database:
             WHERE l.name = ?
         """, (label_name,))
         return [row[0] for row in cursor.fetchall()]
+
+    def update_video_filepath(self, old_filepath, new_filepath):
+        """ Update the filepath of a video record. """
+        cursor = self.conn.cursor()
+        cursor.execute("UPDATE videos SET filepath = ? WHERE filepath = ?", (new_filepath, old_filepath))
+        self.conn.commit()
+        print(f"Updated filepath from {old_filepath} to {new_filepath}")
